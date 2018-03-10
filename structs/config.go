@@ -7,6 +7,8 @@ type WatchEntity struct {
 
 type Configuration struct {
 	ApiTokenEtherscan string
+	SlackApiToken string
+	SlackChannel string
 	Ethereum []WatchEntity
 	Bitcoin []WatchEntity
 }

@@ -1,5 +1,7 @@
 {
   "ApiTokenEtherscan": "",
+  "SlackApiToken": "",
+  "SlackChannel": "",
   "Ethereum": [
     {
       "Address": "0x",

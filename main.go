@@ -60,8 +60,6 @@ func main() {
 
 	log.Print("watcher daemon started")
 
-	runWatchers()
-
 	go mainLoop()
 
 	err = daemon.ServeSignals()
@@ -76,7 +74,7 @@ func isDaemonFlagsPresent() bool {
 }
 
 func runWatchers() {
-	log.Println("Hello")
+	checker.Ethereum(config.Ethereum, config)
 }
 
 func readConfig() {
@@ -93,7 +91,7 @@ func mainLoop() {
 			case <-stop:
 				break
 			case <-time.After(time.Second*5):
-				checker.Ethereum(config.Ethereum, config.ApiTokenEtherscan)
+				runWatchers()
 		}
 	}
 }

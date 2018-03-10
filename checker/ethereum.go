@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"strconv"
+	"github.com/nlopes/slack"
 )
 
 const (
@@ -16,11 +17,15 @@ const (
 	weiFactor = 1e18
 )
 
-var answer map[string]string
+var (
+	answer map[string]string
+)
 
-func Ethereum(wallets []structs.WatchEntity, secret string) {
+func Ethereum(wallets []structs.WatchEntity, config structs.Configuration) {
+	api := slack.New(config.SlackApiToken)
+
 	for _, wallet := range wallets {
-		url := buildUrl(wallet, secret)
+		url := buildUrl(wallet, config.ApiTokenEtherscan)
 		response, err := http.Get(url)
 		if err != nil {
 			log.Printf("Cannot get ethereum balance of %v wallet, error: %v", wallet.Address, err)
@@ -37,7 +42,9 @@ func Ethereum(wallets []structs.WatchEntity, secret string) {
 			log.Printf("Ethereum wallet %v contents %v", wallet.Address, answer)
 			actualAMount := fetchAmount(answer)
 			if wallet.MinAlertValue >= actualAMount {
-				log.Printf("Balance of %v wallet too small (%v)!", wallet.Address, actualAMount)
+				msg := fmt.Sprintf("Balance of %v wallet too small (Ξ%v)!", wallet.Address, actualAMount)
+				log.Println(msg)
+				notifyAboutSmallBalance(config, msg, api)
 			}
 		}
 	}
@@ -54,5 +61,14 @@ func fetchAmount(answer map[string]string) int64 {
 		log.Println("Ethereum balance convert failure: ", err)
 		return 0
 	}
+
 	return amount / weiFactor
+}
+
+func notifyAboutSmallBalance(config structs.Configuration, msg string, api *slack.Client)  {
+	str1, str2, err := api.PostMessage(config.SlackChannel, msg, slack.NewPostMessageParameters())
+	if err != nil {
+		log.Println("Cannot send msg to slack: ", err)
+	}
+	log.Println(str1, str2)
 }
