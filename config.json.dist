@@ -1,0 +1,15 @@
+{
+  "ApiTokenEtherscan": "",
+  "Ethereum": [
+    {
+      "Address": "0x",
+      "MinAddressValue": "3"
+    },
+  ],
+  "Bitcoin": [
+    {
+      "Address": "",
+      "MinAddressValue": "3"
+    }
+  ]
+}
