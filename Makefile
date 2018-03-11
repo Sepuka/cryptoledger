@@ -5,3 +5,6 @@ deps:
 	$(GOGET) github.com/nlopes/slack
 	$(GOGET) github.com/tkanos/gonfig
 	$(GOGET) github.com/sevlyar/go-daemon
+
+test:
+	$(GOCMD) test -v ./...

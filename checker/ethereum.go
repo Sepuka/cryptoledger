@@ -7,14 +7,15 @@ import (
 	"net/http"
 	"encoding/json"
 	"io/ioutil"
-	"strconv"
 	"github.com/nlopes/slack"
+	"math/big"
 )
 
 const (
 	apiurl = "https://api.etherscan.io"
 	pathTemplate = "/api?module=account&action=balance&address=%v&tag=latest&apikey=%v"
 	weiFactor = 1e18
+	precision = 64
 )
 
 var (
@@ -40,7 +41,7 @@ func Ethereum(wallets []structs.WatchEntity, config structs.Configuration) {
 			log.Println("etherscan decode error ", decodeError)
 		} else {
 			log.Printf("Ethereum wallet %v contents %v", wallet.Address, answer)
-			actualAMount := fetchAmount(answer)
+			actualAMount := WeiToEth(answer["expectedResult"])
 			if wallet.MinAlertValue >= actualAMount {
 				msg := fmt.Sprintf("Balance of %v wallet too small (Ξ%v)!", wallet.Address, actualAMount)
 				log.Println(msg)
@@ -55,14 +56,16 @@ func buildUrl(entity structs.WatchEntity, secret string) string {
 	return fmt.Sprint(apiurl, path)
 }
 
-func fetchAmount(answer map[string]string) int64 {
-	amount, err := strconv.ParseInt(answer["result"], 10, 64)
+func WeiToEth(wei string) int64 {
+	amount, _, err := big.ParseFloat(wei, 10, precision, big.ToNearestEven)
 	if err != nil {
 		log.Println("Ethereum balance convert failure: ", err)
 		return 0
 	}
 
-	return amount / weiFactor
+	result, _ := big.NewFloat(0).Quo(amount, big.NewFloat(weiFactor)).Int64()
+
+	return result
 }
 
 func notifyAboutSmallBalance(config structs.Configuration, msg string, api *slack.Client)  {
