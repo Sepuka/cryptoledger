@@ -41,7 +41,7 @@ func Ethereum(wallets []structs.WatchEntity, config structs.Configuration) {
 			log.Println("etherscan decode error ", decodeError)
 		} else {
 			log.Printf("Ethereum wallet %v contents %v", wallet.Address, answer)
-			actualAMount := WeiToEth(answer["expectedResult"])
+			actualAMount := WeiToEth(answer["result"])
 			if wallet.MinAlertValue >= actualAMount {
 				msg := fmt.Sprintf("Balance of %v wallet too small (Ξ%v)!", wallet.Address, actualAMount)
 				log.Println(msg)
@@ -60,7 +60,7 @@ func WeiToEth(wei string) int64 {
 	amount, _, err := big.ParseFloat(wei, 10, precision, big.ToNearestEven)
 	if err != nil {
 		log.Println("Ethereum balance convert failure: ", err)
-		return 0
+		return -1
 	}
 
 	result, _ := big.NewFloat(0).Quo(amount, big.NewFloat(weiFactor)).Int64()

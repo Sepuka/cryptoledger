@@ -90,7 +90,7 @@ func mainLoop() {
 		select {
 			case <-stop:
 				break
-			case <-time.After(time.Second*5):
+			case <-time.After(time.Minute * time.Duration(config.CheckFrequencyMinutes)):
 				runWatchers()
 		}
 	}

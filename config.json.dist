@@ -2,6 +2,7 @@
   "ApiTokenEtherscan": "",
   "SlackApiToken": "",
   "SlackChannel": "",
+  "CheckFrequencyMinutes": 10,
   "Ethereum": [
     {
       "Address": "0x",

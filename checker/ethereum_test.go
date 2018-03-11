@@ -10,6 +10,7 @@ type dataSet struct {
 var dataProvider = []dataSet{
 	{"96523353125837500", 0},
 	{"14960423015270544500", 14},
+	{"", -1},
 }
 
 func TestWeiToEth(t *testing.T) {
